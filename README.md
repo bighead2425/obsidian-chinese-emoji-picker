@@ -89,3 +89,9 @@ node node_modules/esbuild/bin/esbuild src/main.js \
 ## 📄 许可证
 
 MIT © bighead
+
+---
+
+## 🙏 感谢
+
+思源笔记、obsidian，workbuddy
