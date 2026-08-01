@@ -1,0 +1,7 @@
+# 构建中间产物
+node_modules/
+
+# v0.2.0 起插件改用系统字体显示 emoji，不再打包 SVG 资源。
+# 以下为离线源数据，体积大且运行时不需要，不纳入版本库。
+svg/
+src/svg-data.json
