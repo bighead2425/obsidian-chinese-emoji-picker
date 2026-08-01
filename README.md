@@ -28,12 +28,14 @@
 2. 打开 BRAT 设置 → **Add a beta plugin**。
 3. 填入仓库地址：`bighead2425/obsidian-chinese-emoji-picker`。
 4. 回到 设置 → 第三方插件，启用 **Obsidian Chinese Emoji Picker**。
+（这会儿应该还不能用，建议还是用下面的方式二吧）
 
 ### 方式二：手动安装
 
 1. 到本仓库的 Release 页下载 `main.js`、`manifest.json`、`styles.css` 三个文件。
 2. 放进 `你的仓库/.obsidian/plugins/cn-emoji/`（没有就新建该目录）。
 3. Obsidian 设置 → 第三方插件 → 启用 **Obsidian Chinese Emoji Picker**。
+（搞不定的话，建议问问AI，或者调用个agrent帮着操作一下）
 
 ---
 
@@ -41,7 +43,7 @@
 
 | 输入 | 效果 |
 |------|------|
-| `：：梯子` | 搜索"梯子"，选中后插入 🪜 |
+| `：：梯子` | 搜索"梯子"，选中后大概插入 🪜 |
 | `：：笑脸` | 插入 😄 |
 | `：：红心` | 插入 ❤️ |
 | `：：太阳` | 插入 ☀️ |
