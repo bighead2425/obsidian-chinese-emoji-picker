@@ -1,6 +1,6 @@
 {
   "id": "cn-emoji",
-  "name": "Obsidian Chinese Emoji Picker",
+  "name": "Chinese Emoji Picker",
   "version": "0.2.0",
   "minAppVersion": "1.4.0",
   "description": "输入 ：： 后跟中文关键词，调出中文 emoji 选择器；支持方向键/回车/鼠标点击插入，自动把 ：：关键词 整段替换为 emoji。插入的是标准 Unicode 字符（.md 可移植）。面板内 emoji 直接用系统字体显示（所见即所得），系统不识别的字符在面板里就显示方框，与插入后一致。",
