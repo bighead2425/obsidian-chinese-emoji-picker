@@ -103,3 +103,9 @@ A：标准 Unicode 字符，笔记可移植，不依赖图片。
 
 **Q：需要联网吗？**  
 A：不需要，插件完全本地运行。
+
+## 致谢 / Acknowledgements
+
+本插件的 emoji 与中文关键词对应关系、以及 1900+ 个 emoji 数据，整理自 [思源笔记 (SiYuan Notes)](https://b3log.org/siyuan/)。感谢思源笔记社区提供的高质量数据基础（原始数据基于 Unicode CLDR 公共标准）。
+
+The emoji-to-Chinese-keyword mapping and the 1900+ emoji dataset in this plugin are adapted from [SiYuan Notes](https://b3log.org/siyuan/). Thanks to the SiYuan community for the solid data foundation (ultimately based on the public Unicode CLDR standard).
