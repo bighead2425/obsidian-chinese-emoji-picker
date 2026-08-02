@@ -3,7 +3,7 @@
   "name": "Chinese Emoji Picker",
   "version": "0.2.0",
   "minAppVersion": "1.4.0",
-  "description": "An Obsidian plugin that lets you search and insert emoji by Chinese keywords. Just type ：： followed by a Chinese word (e.g. ：：梯子, ：：开心) and a picker panel pops up under the cursor.",
+  "description": "Type ：： followed by a Chinese keyword to open the emoji picker. Supports arrow keys, Enter, and mouse click. The whole ：：keyword text is replaced by the chosen emoji. Uses standard Unicode characters for portable .md notes.",
   "author": "bighead",
   "isDesktopOnly": false
 }
