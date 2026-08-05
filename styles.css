@@ -43,6 +43,12 @@
   background: var(--interactive-accent-hover);
 }
 
+/* 标签待选态下，给当前选中的标签加外框，让「焦点在标签栏」更直观 */
+.cn-emoji-popup.tab-mode .cn-emoji-tab.active {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 1px;
+}
+
 .cn-emoji-tab-char {
   font-size: 16px;
   line-height: 1;

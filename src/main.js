@@ -44,6 +44,8 @@ class EmojiPickerPopup {
     this.filteredItems = [];
     this.cells = [];
     this.tabEls = [];
+    this.tabMode = false; // false=网格态（有 emoji 选中）；true=标签待选态（无 emoji 选中）
+    this.tabMouseMoved = false; // 进入标签待选态后，鼠标是否真正移动过（仅在移动后才允许鼠标选中退出）
     this.gridEl = null;
     this.statusEl = null;
     this.keyHandler = null;
@@ -71,6 +73,10 @@ class EmojiPickerPopup {
         this.setCategory(cat);
         if (this.editor) this.editor.focus();
       });
+      // 新增：[③] 鼠标悬停在分类标签上即预览该分类内容，无需点击
+      btn.addEventListener("mouseenter", () => {
+        this.setCategory(cat);
+      });
       this.tabEls.push(btn);
       this.renderTabImage(btn, cat);
     }
@@ -79,6 +85,12 @@ class EmojiPickerPopup {
     this.statusEl = this.el.createDiv({ cls: "cn-emoji-status" });
 
     document.body.appendChild(this.el);
+
+    // 进入标签待选态后，需「鼠标真正移动过」才允许用鼠标选中 emoji 退出标签态；
+    // 因此在面体上监听 mousemove，一旦移动就置位标记（moveTab 重渲染网格不会触发它）。
+    this.el.addEventListener("mousemove", () => {
+      if (this.tabMode) this.tabMouseMoved = true;
+    });
 
     this.setCategory("全部");
     this.position();
@@ -188,7 +200,8 @@ class EmojiPickerPopup {
     // 空查询的"全部"分类下数量巨大，限制一次性渲染的 DOM 数量，防止卡顿
     const limited = total > MAX_RENDER && !tokens.length && cat === "全部";
     this.filteredItems = limited ? items.slice(0, MAX_RENDER) : items;
-    this.activeIndex = 0;
+    // 标签待选态下不重置选中项（保持「无 emoji 选中」）；网格态才默认选中第一个
+    if (!this.tabMode) this.activeIndex = 0;
     this.renderGrid();
 
     if (limited) {
@@ -215,6 +228,14 @@ class EmojiPickerPopup {
       cell.title = item.name;
       cell.addEventListener("click", () => this.insertItem(item));
       cell.addEventListener("mouseenter", () => {
+        // 标签待选态下：仅当「进入标签态后鼠标真正移动过」才退出标签态并选中该 emoji。
+        // 这样键盘进入标签态时，即使鼠标静止压在某个 emoji 上（或 moveTab 重渲染网格
+        // 重建了光标下的 cell）也不会误触发退出；只有之后鼠标真正移动并指到 emoji 才生效。
+        if (this.tabMode) {
+          if (!this.tabMouseMoved) return;
+          this.tabMode = false;
+          if (this.el) this.el.toggleClass("tab-mode", false);
+        }
         this.activeIndex = i;
         this.updateActive();
       });
@@ -250,6 +271,34 @@ class EmojiPickerPopup {
     this.updateActive();
   }
 
+  // —— 新增：标签待选态相关（需求③）——
+  // 进入标签待选态：选中「当前分类」对应的标签，网格内无 emoji 选中
+  enterTabMode() {
+    this.tabMode = true;
+    this.tabMouseMoved = false; // 刚进入标签态，重置「鼠标移动」标记，防止静止指针误触发退出
+    this.activeIndex = -1;
+    if (this.el) this.el.toggleClass("tab-mode", true);
+    this.updateActive(); // 清除所有 emoji 高亮
+  }
+
+  // 标签待选态下左右移动标签
+  moveTab(dx) {
+    const idx = this.tabEls.findIndex((b) => b.dataset.cat === this.currentCat);
+    const newIdx = Math.max(0, Math.min(this.tabEls.length - 1, idx + dx));
+    if (newIdx === idx) return;
+    const cat = this.tabEls[newIdx].dataset.cat;
+    this.setCategory(cat); // 切换分类并预览网格；因 tabMode=true，filter 不会重置 activeIndex
+    this.updateActive();
+  }
+
+  // 标签待选态下按↓：进入当前分类第一个 emoji
+  enterGridFromTab() {
+    this.tabMode = false;
+    if (this.el) this.el.toggleClass("tab-mode", false);
+    this.activeIndex = 0;
+    this.updateActive();
+  }
+
   async insertItem(item) {
     if (!this.editor) return;
     this.plugin.inserting = true;
@@ -265,6 +314,10 @@ class EmojiPickerPopup {
       }
     } finally {
       this.close();
+      // 修复：[②] 点击上屏后编辑器失焦导致光标不可见。close() 会把被点击的
+      // 按钮从 DOM 移除（焦点随之掉回 body），所以必须在 close() 之后把焦点
+      // 重新交还编辑器，光标才会落在 emoji 之后、可继续输入。
+      if (this.editor) this.editor.focus();
       setTimeout(() => {
         this.plugin.inserting = false;
         this.plugin.popup = null;
@@ -297,13 +350,34 @@ class EmojiPickerPopup {
     if (e.key in moves) {
       e.preventDefault();
       e.stopPropagation();
-      this.moveActive(moves[e.key][0], moves[e.key][1]);
+      const [dx, dy] = moves[e.key];
+      if (this.tabMode) {
+        // —— 标签待选态 ——
+        if (dx !== 0) {
+          // 左右方向键：在分类标签间左右跳转（需求③-2）
+          this.moveTab(dx);
+        } else if (dy === 1) {
+          // 向下方向键：进入当前分类第一个 emoji（需求③-3）
+          // 但若当前分类没有任何 emoji 可选项，按↓不做任何反应、保持标签待选态
+          if (this.filteredItems.length > 0) this.enterGridFromTab();
+        }
+        // 标签态下按↑：已在最顶，忽略
+        return;
+      }
+      // —— 网格态 ——
+      if (dy === -1 && Math.floor(this.activeIndex / COLS) === 0) {
+        // 顶行再按↑：进入标签待选态，选中「当前分类」对应的标签（需求③-1）
+        this.enterTabMode();
+        return;
+      }
+      this.moveActive(dx, dy);
       return;
     }
     if (e.key === "Enter") {
       e.preventDefault();
       e.stopPropagation();
-      this.insertActive();
+      // 标签待选态下 Enter 不做事（已与用户确认）；网格态才插入
+      if (!this.tabMode) this.insertActive();
     } else if (e.key === "Escape") {
       e.preventDefault();
       e.stopPropagation();

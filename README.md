@@ -109,3 +109,18 @@ A：不需要，插件完全本地运行。
 本插件的 emoji 与中文关键词对应关系、以及 1900+ 个 emoji 数据，整理自 [思源笔记 (SiYuan Notes)](https://b3log.org/siyuan/)。感谢思源笔记社区提供的高质量数据基础（原始数据基于 Unicode CLDR 公共标准）。
 
 The emoji-to-Chinese-keyword mapping and the 1900+ emoji dataset in this plugin are adapted from [SiYuan Notes](https://b3log.org/siyuan/). Thanks to the SiYuan community for the solid data foundation (ultimately based on the public Unicode CLDR standard).
+
+## 更新日志 / Changelog
+
+### 0.2.4
+- 标签待选态下，若当前分类没有任何 emoji 可选项，按 ↓ 方向键不做任何反应，保持标签待选态（不再误退出）。
+
+### 0.2.3
+- 修复：用键盘进入「标签待选态」时，若鼠标静止压在某个 emoji 上（或切换分类时网格重渲染、重建了光标下的 cell），会误触发退出标签态并选中该 emoji。现在只有进入标签态后鼠标真正移动过、再移到 emoji 上，才会退出标签态并选中。
+
+### 0.2.2
+- 新增双层键盘导航：网格顶行按 ↑ 进入「标签待选态」（选中当前分类标签，网格内无 emoji 选中）；标签待选态下 ← → 左右切换分类并预览，↓ 进入当前分类第一个 emoji；标签待选态下鼠标移到 emoji 即退出标签态并选中该 emoji。
+
+### 0.2.1
+- 修复：点击 emoji 上屏后编辑器光标失焦、光标不可见无法续打的问题。
+- 新增：鼠标悬停在顶部分类标签上即自动预览该分类内容（无需点击）。
